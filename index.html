@@ -1,0 +1,1463 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <title>Beginner At-Home Soccer Training Hub</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        pitch: {
+                            800: '#143820',
+                            700: '#1E5631',
+                            600: '#2A7242',
+                            500: '#389B59',
+                            100: '#E8F5EB',
+                            50: '#F2FAF4'
+                        },
+                        amber: {
+                            accent: '#F5A623',
+                            hover: '#D98E18'
+                        },
+                        charcoal: '#1E293B',
+                        cardbg: '#F8FAF8'
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        display: ['Oswald', 'sans-serif']
+                    }
+                }
+            }
+        }
+    </script>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Oswald:wght@500;600;700&display=swap" rel="stylesheet">
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        html, body {
+            max-width: 100%;
+            overflow-x: clip;
+        }
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #0d1f14;
+            color: #F8FAF8;
+            -webkit-text-size-adjust: 100%;
+        }
+        h1, h2, h3, h4, p, button, span {
+            overflow-wrap: break-word;
+        }
+        button, a {
+            touch-action: manipulation;
+        }
+        .font-display {
+            font-family: 'Oswald', sans-serif;
+        }
+        .glass-panel {
+            background: rgba(20, 56, 32, 0.65);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        .custom-card {
+            background-color: #162a1c;
+            border: 1px solid rgba(56, 155, 89, 0.2);
+            transition: transform 0.2s ease, border-color 0.2s ease;
+        }
+        .custom-card:active {
+            border-color: #F5A623;
+        }
+        @media (hover: hover) and (pointer: fine) {
+            .custom-card:hover {
+                border-color: #F5A623;
+                transform: translateY(-2px);
+            }
+        }
+        .auto-grid {
+            display: grid;
+            gap: 1rem;
+            grid-template-columns: repeat(auto-fit, minmax(min(100%, 16.5rem), 1fr));
+        }
+        .auto-grid-tight {
+            display: grid;
+            gap: 0.75rem;
+            grid-template-columns: repeat(auto-fit, minmax(min(100%, 9.5rem), 1fr));
+        }
+        .timer-ring {
+            width: min(16rem, 100%);
+            aspect-ratio: 1;
+        }
+        #bottom-nav {
+            padding-bottom: env(safe-area-inset-bottom);
+        }
+        .video-container {
+            position: relative;
+            padding-bottom: 56.25%; /* 16:9 Aspect Ratio */
+            height: 0;
+            overflow: hidden;
+            border-radius: 0.75rem;
+        }
+        .video-container iframe {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+        }
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #0d1f14;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #1E5631;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #389B59;
+        }
+        .pulse-amber {
+            animation: pulse-border 2s infinite;
+        }
+        @keyframes pulse-border {
+            0% { box-shadow: 0 0 0 0 rgba(245, 166, 35, 0.7); }
+            70% { box-shadow: 0 0 0 10px rgba(245, 166, 35, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(245, 166, 35, 0); }
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col justify-between antialiased selection:bg-amber-accent selection:text-pitch-800">
+
+    <!-- Top Sticky Header Navigation -->
+    <header class="sticky top-0 z-50 glass-panel border-b border-pitch-600/30">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-14 sm:h-16 gap-3">
+                <!-- Logo / Title -->
+                <div class="flex items-center space-x-2 sm:space-x-3 cursor-pointer min-w-0" onclick="navigateTo('home')">
+                    <div class="w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-amber-accent flex items-center justify-center text-pitch-800 font-bold text-lg sm:text-xl shadow-lg shrink-0">
+                        <i class="fa-solid fa-futbol"></i>
+                    </div>
+                    <div class="min-w-0">
+                        <span class="font-display text-lg sm:text-2xl font-bold tracking-wide text-white uppercase block leading-none truncate">PITCH & TOUCH</span>
+                        <span class="hidden sm:block text-xs text-amber-accent font-medium tracking-wider uppercase">At-Home Soccer Portal</span>
+                    </div>
+                </div>
+
+                <!-- Desktop Navigation Links -->
+                <nav class="hidden md:flex space-x-2">
+                    <button onclick="navigateTo('home')" id="nav-home" class="nav-btn px-4 py-2 rounded-lg text-sm font-semibold transition-all flex items-center space-x-2 bg-pitch-700 text-white">
+                        <i class="fa-solid fa-house text-amber-accent"></i>
+                        <span>Routine Overview</span>
+                    </button>
+                    <button onclick="navigateTo('exercises')" id="nav-exercises" class="nav-btn px-4 py-2 rounded-lg text-sm font-semibold text-gray-300 hover:text-white hover:bg-pitch-700/50 transition-all flex items-center space-x-2">
+                        <i class="fa-solid fa-list-check text-amber-accent"></i>
+                        <span>Exercises Hub</span>
+                    </button>
+                    <button onclick="navigateTo('timer')" id="nav-timer" class="nav-btn px-4 py-2 rounded-lg text-sm font-semibold text-gray-300 hover:text-white hover:bg-pitch-700/50 transition-all flex items-center space-x-2">
+                        <i class="fa-solid fa-stopwatch text-amber-accent"></i>
+                        <span>Interactive Timer</span>
+                    </button>
+                    <button onclick="navigateTo('resources')" id="nav-resources" class="nav-btn px-4 py-2 rounded-lg text-sm font-semibold text-gray-300 hover:text-white hover:bg-pitch-700/50 transition-all flex items-center space-x-2">
+                        <i class="fa-solid fa-book-open text-amber-accent"></i>
+                        <span>Resources</span>
+                    </button>
+                </nav>
+
+                <!-- Mobile Menu Button -->
+                <div class="md:hidden">
+                    <button id="mobile-menu-toggle" class="p-2 rounded-lg text-gray-300 hover:text-white hover:bg-pitch-700 focus:outline-none">
+                        <i class="fa-solid fa-bars text-xl"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Mobile Navigation Dropdown -->
+        <div id="mobile-menu" class="hidden md:hidden bg-pitch-800/95 border-b border-pitch-600/40 px-4 pt-2 pb-4 space-y-2">
+            <button id="mnav-home" onclick="navigateTo('home'); closeMobileMenu();" class="mnav-btn w-full text-left px-4 py-3 rounded-lg text-sm font-medium text-white bg-pitch-700 flex items-center space-x-3">
+                <i class="fa-solid fa-house text-amber-accent w-5"></i>
+                <span>Routine Overview</span>
+            </button>
+            <button id="mnav-exercises" onclick="navigateTo('exercises'); closeMobileMenu();" class="mnav-btn w-full text-left px-4 py-3 rounded-lg text-sm font-medium text-gray-300 hover:bg-pitch-700 flex items-center space-x-3">
+                <i class="fa-solid fa-list-check text-amber-accent w-5"></i>
+                <span>Exercises Hub</span>
+            </button>
+            <button id="mnav-timer" onclick="navigateTo('timer'); closeMobileMenu();" class="mnav-btn w-full text-left px-4 py-3 rounded-lg text-sm font-medium text-gray-300 hover:bg-pitch-700 flex items-center space-x-3">
+                <i class="fa-solid fa-stopwatch text-amber-accent w-5"></i>
+                <span>Interactive Timer</span>
+            </button>
+            <button id="mnav-resources" onclick="navigateTo('resources'); closeMobileMenu();" class="mnav-btn w-full text-left px-4 py-3 rounded-lg text-sm font-medium text-gray-300 hover:bg-pitch-700 flex items-center space-x-3">
+                <i class="fa-solid fa-book-open text-amber-accent w-5"></i>
+                <span>Resources & Sheets</span>
+            </button>
+        </div>
+    </header>
+
+    <!-- MAIN CONTENT AREA -->
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-5 sm:py-8 pb-24 md:pb-8 flex-grow w-full min-w-0">
+
+        <!-- ================= PAGE 1: ROUTINE OVERVIEW (HOME) ================= -->
+        <section id="page-home" class="page-content space-y-8">
+            <!-- Hero Banner -->
+            <div class="relative rounded-2xl overflow-hidden bg-gradient-to-r from-pitch-800 via-pitch-700 to-pitch-800 p-5 sm:p-8 lg:p-12 border border-pitch-500/30 shadow-2xl">
+                <div class="absolute right-0 top-0 bottom-0 w-1/3 opacity-10 bg-[radial-gradient(#F5A623_1px,transparent_1px)] [background-size:16px_16px]"></div>
+                <div class="relative z-10 max-w-3xl space-y-4">
+                    <div class="inline-flex items-center space-x-2 px-3 py-1 rounded-full bg-amber-accent/20 border border-amber-accent/40 text-amber-accent text-xs font-bold tracking-wider uppercase">
+                        <i class="fa-solid fa-bolt"></i>
+                        <span>Beginner At-Home Mastery</span>
+                    </div>
+                    <h1 class="font-display text-3xl sm:text-4xl lg:text-5xl font-extrabold text-white tracking-tight leading-tight">
+                        20-MINUTE AT-HOME <span class="text-amber-accent">SOCCER TRAINING</span>
+                    </h1>
+                    <p class="text-gray-300 text-base sm:text-lg leading-relaxed">
+                        A structured daily routine designed to build foundational footwork, coordination, and touch—all in a small living room or garage space.
+                    </p>
+                    <div class="pt-2 flex flex-col sm:flex-row flex-wrap gap-3">
+                        <button onclick="navigateTo('timer')" class="w-full sm:w-auto justify-center px-6 py-3.5 rounded-xl bg-amber-accent hover:bg-amber-hover text-pitch-800 font-bold text-base shadow-lg shadow-amber-accent/20 transition-all flex items-center space-x-2 sm:hover:-translate-y-0.5">
+                            <i class="fa-solid fa-play"></i>
+                            <span>Start Interactive Workout</span>
+                        </button>
+                        <button onclick="navigateTo('exercises')" class="w-full sm:w-auto justify-center px-6 py-3.5 rounded-xl bg-pitch-600/40 hover:bg-pitch-600/70 border border-pitch-500/50 text-white font-semibold text-base transition-all flex items-center space-x-2">
+                            <i class="fa-solid fa-eye"></i>
+                            <span>Browse Exercises</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- At-a-Glance Stat Cards -->
+            <div class="auto-grid">
+                <div class="custom-card p-6 rounded-xl flex items-center space-x-4">
+                    <div class="w-14 h-14 rounded-xl bg-pitch-700/80 border border-amber-accent/30 flex items-center justify-center text-amber-accent text-2xl shrink-0">
+                        <i class="fa-solid fa-clock"></i>
+                    </div>
+                    <div>
+                        <span class="text-xs uppercase font-semibold text-gray-400 tracking-wider">Total Duration</span>
+                        <h3 class="text-2xl font-bold text-white font-display">~20 Minutes</h3>
+                        <p class="text-xs text-pitch-100">Including warm-up & cool-down</p>
+                    </div>
+                </div>
+
+                <div class="custom-card p-6 rounded-xl flex items-center space-x-4">
+                    <div class="w-14 h-14 rounded-xl bg-pitch-700/80 border border-amber-accent/30 flex items-center justify-center text-amber-accent text-2xl shrink-0">
+                        <i class="fa-solid fa-futbol"></i>
+                    </div>
+                    <div>
+                        <span class="text-xs uppercase font-semibold text-gray-400 tracking-wider">Required Equipment</span>
+                        <h3 class="text-2xl font-bold text-white font-display">1 Soccer Ball</h3>
+                        <p class="text-xs text-pitch-100">& 6x6 ft flat floor space</p>
+                    </div>
+                </div>
+
+                <div class="custom-card p-6 rounded-xl flex items-center space-x-4">
+                    <div class="w-14 h-14 rounded-xl bg-pitch-700/80 border border-amber-accent/30 flex items-center justify-center text-amber-accent text-2xl shrink-0">
+                        <i class="fa-solid fa-bullseye"></i>
+                    </div>
+                    <div>
+                        <span class="text-xs uppercase font-semibold text-gray-400 tracking-wider">Training Focus</span>
+                        <h3 class="text-2xl font-bold text-white font-display">Ball Control</h3>
+                        <p class="text-xs text-pitch-100">Footwork speed & aerial touch</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Full Training Routine Phases Table -->
+            <div class="space-y-6">
+                <div class="flex items-center justify-between border-b border-pitch-600/40 pb-4">
+                    <div>
+                        <h2 class="font-display text-2xl sm:text-3xl font-bold text-white uppercase tracking-wide">Routine Breakdown</h2>
+                        <p class="text-sm text-gray-400">Click any exercise card to view YouTube video guides & detailed step-by-step cues.</p>
+                    </div>
+                </div>
+
+                <!-- Phase 1 -->
+                <div class="bg-pitch-800/80 rounded-xl border border-pitch-600/50 overflow-hidden">
+                    <div class="bg-pitch-700/60 px-6 py-4 flex flex-wrap items-center justify-between gap-2 border-b border-pitch-600/40">
+                        <div class="flex items-center space-x-3">
+                            <span class="px-3 py-1 rounded bg-amber-accent text-pitch-800 font-bold text-xs uppercase tracking-wider">Phase 1</span>
+                            <h3 class="font-display text-xl font-bold text-white">Dynamic Warm-Up</h3>
+                        </div>
+                        <span class="text-xs font-semibold text-amber-accent bg-amber-accent/10 px-3 py-1 rounded-full border border-amber-accent/20">2.5 Minutes</span>
+                    </div>
+                    <div class="p-4 sm:p-6 auto-grid">
+                        <div class="p-4 rounded-lg bg-pitch-700/30 border border-pitch-600/30">
+                            <span class="text-xs font-bold text-amber-accent uppercase">30s Each</span>
+                            <h4 class="font-semibold text-white mt-1">High Knees & Butt Kicks</h4>
+                            <p class="text-xs text-gray-400 mt-1">Light jogging in place to raise heart rate.</p>
+                        </div>
+                        <div class="p-4 rounded-lg bg-pitch-700/30 border border-pitch-600/30">
+                            <span class="text-xs font-bold text-amber-accent uppercase">30s Per Leg</span>
+                            <h4 class="font-semibold text-white mt-1">Ankle Rolls & Leg Swings</h4>
+                            <p class="text-xs text-gray-400 mt-1">Open up hips and loosen calves.</p>
+                        </div>
+                        <div class="p-4 rounded-lg bg-pitch-700/30 border border-pitch-600/30">
+                            <span class="text-xs font-bold text-amber-accent uppercase">30 Seconds</span>
+                            <h4 class="font-semibold text-white mt-1">Dynamic Calf Raises</h4>
+                            <p class="text-xs text-gray-400 mt-1">Rise onto toes quickly for lower leg readiness.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Phase 2: Technical Footwork Circuit -->
+                <div class="bg-pitch-800/80 rounded-xl border border-pitch-600/50 overflow-hidden">
+                    <div class="bg-pitch-700/60 px-6 py-4 flex flex-wrap items-center justify-between gap-2 border-b border-pitch-600/40">
+                        <div class="flex items-center space-x-3">
+                            <span class="px-3 py-1 rounded bg-amber-accent text-pitch-800 font-bold text-xs uppercase tracking-wider">Phase 2</span>
+                            <h3 class="font-display text-xl font-bold text-white">Technical Footwork Circuit</h3>
+                        </div>
+                        <span class="text-xs font-semibold text-amber-accent bg-amber-accent/10 px-3 py-1 rounded-full border border-amber-accent/20">~9 Mins • 3 Rounds (30s Work / 15s Rest)</span>
+                    </div>
+                    <div class="p-4 sm:p-6 auto-grid">
+                        
+                        <!-- Drill 1 Card -->
+                        <div onclick="openExercise('toe-taps')" class="custom-card p-5 rounded-xl cursor-pointer group flex flex-col justify-between">
+                            <div>
+                                <div class="flex justify-between items-start mb-3">
+                                    <span class="w-7 h-7 rounded-full bg-pitch-700 text-amber-accent flex items-center justify-center text-xs font-bold border border-amber-accent/30">1</span>
+                                    <span class="text-xs bg-pitch-700/80 text-amber-accent px-2 py-0.5 rounded font-mono">30s / 15s</span>
+                                </div>
+                                <h4 class="font-bold text-white group-hover:text-amber-accent transition-colors">Stationary Toe Taps</h4>
+                                <p class="text-xs text-gray-400 mt-1">Lightly tap top of stationary ball with sole of alternating feet.</p>
+                            </div>
+                            <div class="mt-4 pt-3 border-t border-pitch-600/30 flex items-center justify-between text-xs text-amber-accent font-medium">
+                                <span>Watch Video & Cues</span>
+                                <i class="fa-solid fa-arrow-right transform group-hover:translate-x-1 transition-transform"></i>
+                            </div>
+                        </div>
+
+                        <!-- Drill 2 Card -->
+                        <div onclick="openExercise('bell-touches')" class="custom-card p-5 rounded-xl cursor-pointer group flex flex-col justify-between">
+                            <div>
+                                <div class="flex justify-between items-start mb-3">
+                                    <span class="w-7 h-7 rounded-full bg-pitch-700 text-amber-accent flex items-center justify-center text-xs font-bold border border-amber-accent/30">2</span>
+                                    <span class="text-xs bg-pitch-700/80 text-amber-accent px-2 py-0.5 rounded font-mono">30s / 15s</span>
+                                </div>
+                                <h4 class="font-bold text-white group-hover:text-amber-accent transition-colors">Bell Touches (Tick-Tocks)</h4>
+                                <p class="text-xs text-gray-400 mt-1">Quick side-to-side passes between inside of feet.</p>
+                            </div>
+                            <div class="mt-4 pt-3 border-t border-pitch-600/30 flex items-center justify-between text-xs text-amber-accent font-medium">
+                                <span>Watch Video & Cues</span>
+                                <i class="fa-solid fa-arrow-right transform group-hover:translate-x-1 transition-transform"></i>
+                            </div>
+                        </div>
+
+                        <!-- Drill 3 Card -->
+                        <div onclick="openExercise('sole-rolls')" class="custom-card p-5 rounded-xl cursor-pointer group flex flex-col justify-between">
+                            <div>
+                                <div class="flex justify-between items-start mb-3">
+                                    <span class="w-7 h-7 rounded-full bg-pitch-700 text-amber-accent flex items-center justify-center text-xs font-bold border border-amber-accent/30">3</span>
+                                    <span class="text-xs bg-pitch-700/80 text-amber-accent px-2 py-0.5 rounded font-mono">30s / 15s</span>
+                                </div>
+                                <h4 class="font-bold text-white group-hover:text-amber-accent transition-colors">Sole Rolls (Push-Pulls)</h4>
+                                <p class="text-xs text-gray-400 mt-1">Roll ball laterally across body with sole and trap opposite side.</p>
+                            </div>
+                            <div class="mt-4 pt-3 border-t border-pitch-600/30 flex items-center justify-between text-xs text-amber-accent font-medium">
+                                <span>Watch Video & Cues</span>
+                                <i class="fa-solid fa-arrow-right transform group-hover:translate-x-1 transition-transform"></i>
+                            </div>
+                        </div>
+
+                        <!-- Drill 4 Card -->
+                        <div onclick="openExercise('v-cuts')" class="custom-card p-5 rounded-xl cursor-pointer group flex flex-col justify-between">
+                            <div>
+                                <div class="flex justify-between items-start mb-3">
+                                    <span class="w-7 h-7 rounded-full bg-pitch-700 text-amber-accent flex items-center justify-center text-xs font-bold border border-amber-accent/30">4</span>
+                                    <span class="text-xs bg-pitch-700/80 text-amber-accent px-2 py-0.5 rounded font-mono">30s / 15s</span>
+                                </div>
+                                <h4 class="font-bold text-white group-hover:text-amber-accent transition-colors">Foundation V-Cuts</h4>
+                                <p class="text-xs text-gray-400 mt-1">Pull back with sole and push forward diagonally with inside foot.</p>
+                            </div>
+                            <div class="mt-4 pt-3 border-t border-pitch-600/30 flex items-center justify-between text-xs text-amber-accent font-medium">
+                                <span>Watch Video & Cues</span>
+                                <i class="fa-solid fa-arrow-right transform group-hover:translate-x-1 transition-transform"></i>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+
+                <!-- Phase 3 & Phase 4 Grid -->
+                <div class="auto-grid">
+                    <!-- Phase 3 -->
+                    <div class="bg-pitch-800/80 rounded-xl border border-pitch-600/50 overflow-hidden flex flex-col justify-between">
+                        <div>
+                            <div class="bg-pitch-700/60 px-4 sm:px-6 py-4 flex flex-wrap items-center justify-between gap-2 border-b border-pitch-600/40">
+                                <div class="flex items-center space-x-3 min-w-0">
+                                    <span class="px-3 py-1 rounded bg-amber-accent text-pitch-800 font-bold text-xs uppercase tracking-wider shrink-0">Phase 3</span>
+                                    <h3 class="font-display text-lg sm:text-xl font-bold text-white">Aerial Control & Touch</h3>
+                                </div>
+                                <span class="text-xs font-semibold text-amber-accent bg-amber-accent/10 px-3 py-1 rounded-full border border-amber-accent/20">3 Mins (45s / 15s)</span>
+                            </div>
+                            <div onclick="openExercise('juggling')" class="p-6 cursor-pointer group">
+                                <div class="flex flex-wrap justify-between items-start gap-2 mb-2">
+                                    <h4 class="font-bold text-lg text-white group-hover:text-amber-accent transition-colors">Kick-Ups (Juggling Progressions)</h4>
+                                    <span class="text-xs bg-pitch-700 text-amber-accent px-2 py-1 rounded font-mono">3 Sets</span>
+                                </div>
+                                <p class="text-sm text-gray-300 mb-4">Master soft laces contact, locked ankle, and single bounce returns.</p>
+                                <ul class="space-y-2 text-xs text-gray-400">
+                                    <li class="flex items-center space-x-2">
+                                        <i class="fa-solid fa-circle-check text-amber-accent"></i>
+                                        <span>Level 1: Drop ball, single bounce, kick & catch.</span>
+                                    </li>
+                                    <li class="flex items-center space-x-2">
+                                        <i class="fa-solid fa-circle-check text-amber-accent"></i>
+                                        <span>Level 2: Double consecutive touches before catching.</span>
+                                    </li>
+                                </ul>
+                                <div class="mt-4 pt-3 border-t border-pitch-600/30 flex items-center justify-between text-xs text-amber-accent font-medium">
+                                    <span>Open Juggling Video Tutorial</span>
+                                    <i class="fa-solid fa-arrow-right transform group-hover:translate-x-1 transition-transform"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Phase 4 -->
+                    <div class="bg-pitch-800/80 rounded-xl border border-pitch-600/50 overflow-hidden flex flex-col justify-between">
+                        <div>
+                            <div class="bg-pitch-700/60 px-4 sm:px-6 py-4 flex flex-wrap items-center justify-between gap-2 border-b border-pitch-600/40">
+                                <div class="flex items-center space-x-3 min-w-0">
+                                    <span class="px-3 py-1 rounded bg-amber-accent text-pitch-800 font-bold text-xs uppercase tracking-wider shrink-0">Phase 4</span>
+                                    <h3 class="font-display text-lg sm:text-xl font-bold text-white">Cool-Down & Recovery</h3>
+                                </div>
+                                <span class="text-xs font-semibold text-amber-accent bg-amber-accent/10 px-3 py-1 rounded-full border border-amber-accent/20">90 Seconds</span>
+                            </div>
+                            <div class="p-6 space-y-4">
+                                <div class="p-3 bg-pitch-700/30 rounded-lg border border-pitch-600/30">
+                                    <h4 class="font-semibold text-white text-sm">Wall Calf Stretch (30s per leg)</h4>
+                                    <p class="text-xs text-gray-400">Extremely important after high-frequency toe taps.</p>
+                                </div>
+                                <div class="p-3 bg-pitch-700/30 rounded-lg border border-pitch-600/30">
+                                    <h4 class="font-semibold text-white text-sm">Hamstrings & Quads Stretch (30s total)</h4>
+                                    <p class="text-xs text-gray-400">Slow down heart rate and stretch lower limbs.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </section>
+
+        <!-- ================= PAGE 2: EXERCISES HUB ================= -->
+        <section id="page-exercises" class="page-content hidden space-y-6">
+            <div class="border-b border-pitch-600/40 pb-4">
+                <h1 class="font-display text-2xl sm:text-3xl font-bold text-white uppercase tracking-wide">Exercise Directory & Video Library</h1>
+                <p class="text-sm text-gray-400">Select any drill to view video demonstrations, primary contact surfaces, key cues, and common mistakes.</p>
+            </div>
+
+            <div class="auto-grid" id="exercise-cards-grid">
+                <!-- Injected via JavaScript -->
+            </div>
+        </section>
+
+        <!-- ================= PAGE 3: INDIVIDUAL EXERCISE DETAIL PAGE ================= -->
+        <section id="page-exercise-detail" class="page-content hidden space-y-6">
+            <!-- Navigation Back Bar -->
+            <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+                <button onclick="navigateTo('exercises')" class="w-full sm:w-auto justify-center px-4 py-3 rounded-lg bg-pitch-700 hover:bg-pitch-600 text-white text-sm font-semibold flex items-center space-x-2 transition-all">
+                    <i class="fa-solid fa-chevron-left"></i>
+                    <span>Back to Exercises</span>
+                </button>
+                <span id="detail-drill-category" class="self-start px-3 py-1 rounded-full bg-amber-accent/20 border border-amber-accent/40 text-amber-accent text-xs font-bold uppercase tracking-wider">Phase 2 Drill</span>
+            </div>
+
+            <!-- Drill Header Title -->
+            <div>
+                <h1 id="detail-title" class="font-display text-2xl sm:text-4xl font-extrabold text-white uppercase tracking-tight leading-tight">Stationary Toe Taps</h1>
+                <p id="detail-subtitle" class="text-gray-400 text-sm mt-1">Fundamental footwork rhythm drill for sole contact and balance.</p>
+            </div>
+
+            <!-- Video Player Widescreen Container -->
+            <div id="detail-video-wrap" class="bg-pitch-800 rounded-xl p-3 border border-pitch-600/50 shadow-2xl">
+                <div class="video-container">
+                    <iframe id="detail-iframe" src="" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
+                </div>
+            </div>
+
+            <!-- Quick Stats Badges -->
+            <div class="auto-grid-tight">
+                <div class="bg-pitch-800/80 p-4 rounded-xl border border-pitch-600/40 text-center">
+                    <span class="text-xs text-gray-400 uppercase font-bold tracking-wider block">Work / Rest</span>
+                    <span id="detail-stat-workrest" class="font-display text-lg sm:text-xl font-bold text-amber-accent mt-1 block">30s / 15s</span>
+                </div>
+                <div class="bg-pitch-800/80 p-4 rounded-xl border border-pitch-600/40 text-center">
+                    <span class="text-xs text-gray-400 uppercase font-bold tracking-wider block">Target Sets</span>
+                    <span id="detail-stat-sets" class="font-display text-lg sm:text-xl font-bold text-white mt-1 block">3 Rounds</span>
+                </div>
+                <div class="bg-pitch-800/80 p-4 rounded-xl border border-pitch-600/40 text-center">
+                    <span class="text-xs text-gray-400 uppercase font-bold tracking-wider block">Foot Surface</span>
+                    <span id="detail-stat-surface" class="font-display text-lg sm:text-xl font-bold text-white mt-1 block">Sole of Foot</span>
+                </div>
+                <div class="bg-pitch-800/80 p-4 rounded-xl border border-pitch-600/40 text-center">
+                    <span class="text-xs text-gray-400 uppercase font-bold tracking-wider block">Difficulty</span>
+                    <span id="detail-stat-diff" class="font-display text-lg sm:text-xl font-bold text-amber-accent mt-1 block">Beginner</span>
+                </div>
+            </div>
+
+            <!-- Cues & Instructions -->
+            <div class="auto-grid">
+                <!-- Step by Step instructions -->
+                <div class="bg-pitch-800/80 p-6 rounded-xl border border-pitch-600/50 space-y-4">
+                    <h3 class="font-display text-xl font-bold text-white flex items-center space-x-2">
+                        <i class="fa-solid fa-list-ol text-amber-accent"></i>
+                        <span>Key Execution Steps</span>
+                    </h3>
+                    <ol id="detail-cues-list" class="space-y-3 text-sm text-gray-300 list-decimal list-inside">
+                        <!-- Injected JS -->
+                    </ol>
+                </div>
+
+                <!-- Common Mistakes -->
+                <div class="bg-pitch-800/80 p-6 rounded-xl border border-pitch-600/50 space-y-4">
+                    <h3 class="font-display text-xl font-bold text-white flex items-center space-x-2">
+                        <i class="fa-solid fa-triangle-exclamation text-amber-accent"></i>
+                        <span>Common Mistakes to Avoid</span>
+                    </h3>
+                    <ul id="detail-mistakes-list" class="space-y-3 text-sm text-gray-300">
+                        <!-- Injected JS -->
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Bottom Navigation Bar -->
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 pt-4 border-t border-pitch-600/40">
+                <button id="btn-prev-drill" class="w-full justify-center px-4 py-3 rounded-xl bg-pitch-700 hover:bg-pitch-600 text-white font-semibold text-sm flex items-center space-x-2 transition-all">
+                    <i class="fa-solid fa-arrow-left"></i>
+                    <span>Previous</span>
+                </button>
+                <button onclick="navigateTo('timer')" class="w-full justify-center px-4 py-3 rounded-xl bg-amber-accent hover:bg-amber-hover text-pitch-800 font-bold text-sm flex items-center space-x-2 shadow-lg">
+                    <i class="fa-solid fa-stopwatch"></i>
+                    <span>Practice with Timer</span>
+                </button>
+                <button id="btn-next-drill" class="w-full justify-center px-4 py-3 rounded-xl bg-pitch-700 hover:bg-pitch-600 text-white font-semibold text-sm flex items-center gap-2 transition-all text-center">
+                    <span class="leading-tight">Next Drill</span>
+                    <i class="fa-solid fa-arrow-right shrink-0"></i>
+                </button>
+            </div>
+        </section>
+
+        <!-- ================= PAGE 4: INTERACTIVE WORKOUT TIMER ================= -->
+        <section id="page-timer" class="page-content hidden space-y-6">
+            <div class="text-center max-w-xl mx-auto space-y-2">
+                <span class="px-3 py-1 rounded-full bg-amber-accent/20 border border-amber-accent/40 text-amber-accent text-xs font-bold uppercase tracking-wider">Live Session Assistant</span>
+                <h1 class="font-display text-2xl sm:text-4xl font-extrabold text-white uppercase leading-tight">Guided Routine Timer</h1>
+                <p class="text-sm text-gray-400">Prop up your phone and press start! Follow intervals with audio beeps and on-screen drill prompts.</p>
+            </div>
+
+            <!-- Timer Dashboard Container -->
+            <div class="max-w-2xl mx-auto bg-pitch-800 rounded-2xl border border-pitch-600/50 p-4 sm:p-8 shadow-2xl space-y-5 sm:space-y-6 text-center relative overflow-hidden">
+                <div id="timer-banner-phase" class="text-xs font-bold uppercase tracking-wide text-amber-accent bg-amber-accent/10 border border-amber-accent/30 py-1.5 px-4 rounded-full inline-block max-w-full">
+                    Phase 1: Dynamic Warm-Up
+                </div>
+
+                <!-- Active Drill Name -->
+                <div class="px-1">
+                    <h2 id="timer-drill-title" class="font-display text-xl sm:text-3xl font-bold text-white uppercase leading-tight">High Knees</h2>
+                    <p id="timer-drill-desc" class="text-xs sm:text-sm text-gray-300 mt-1">Warm-up • Drive knees up, light and quick</p>
+                    <button id="timer-details-link" type="button" onclick="openCurrentTimerExercise()" class="mt-3 inline-flex items-center justify-center gap-2 px-4 py-2 rounded-lg bg-pitch-700 hover:bg-pitch-600 border border-amber-accent/40 text-amber-accent text-sm font-semibold transition-all">
+                        <i class="fa-solid fa-circle-play"></i>
+                        <span>View exercise details</span>
+                    </button>
+                </div>
+
+                <!-- Big Countdown Display Circle -->
+                <div class="timer-ring relative mx-auto flex items-center justify-center">
+                    <svg class="w-full h-full transform -rotate-90" viewBox="0 0 256 256">
+                        <circle cx="128" cy="128" r="110" stroke="currentColor" stroke-width="12" class="text-pitch-700" fill="transparent" />
+                        <circle id="timer-progress-ring" cx="128" cy="128" r="110" stroke="currentColor" stroke-width="12" class="text-amber-accent transition-all duration-300" fill="transparent" stroke-dasharray="691" stroke-dashoffset="0" stroke-linecap="round" />
+                    </svg>
+                    <div class="absolute inset-0 flex flex-col items-center justify-center px-6">
+                        <span id="timer-status-label" class="text-xs uppercase font-extrabold tracking-widest text-emerald-400">WORK</span>
+                        <span id="timer-countdown" class="font-display text-6xl sm:text-7xl font-extrabold text-white tracking-tight my-1">30</span>
+                        <span id="timer-round-info" class="text-xs text-gray-400 font-medium">Interval 1 / 15</span>
+                    </div>
+                </div>
+
+                <!-- Play Controls -->
+                <div class="flex items-stretch gap-3 pt-1">
+                    <button id="btn-timer-reset" onclick="resetTimer()" class="w-14 h-14 shrink-0 rounded-xl bg-pitch-700 hover:bg-pitch-600 text-white flex items-center justify-center transition-all" title="Reset workout">
+                        <i class="fa-solid fa-rotate-right text-lg"></i>
+                    </button>
+                    <button id="btn-timer-toggle" onclick="toggleTimer()" class="flex-1 min-w-0 px-4 py-4 rounded-xl bg-amber-accent hover:bg-amber-hover text-pitch-800 font-extrabold text-base sm:text-lg flex items-center justify-center space-x-3 shadow-xl transition-all">
+                        <i id="timer-toggle-icon" class="fa-solid fa-play"></i>
+                        <span id="timer-toggle-text">START WORKOUT</span>
+                    </button>
+                </div>
+
+                <!-- Previous / Next exercise rows -->
+                <div class="space-y-2">
+                    <button id="btn-timer-prev" onclick="previousInterval()" class="w-full px-4 py-3.5 rounded-xl bg-pitch-700 hover:bg-pitch-600 border border-pitch-500/40 text-white font-bold text-sm flex items-center justify-center gap-2 transition-all disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:bg-pitch-700">
+                        <i class="fa-solid fa-backward-step text-amber-accent shrink-0"></i>
+                        <span id="timer-prev-label" class="leading-tight">Previous</span>
+                    </button>
+                    <button id="btn-timer-skip" onclick="skipInterval()" class="w-full px-4 py-3.5 rounded-xl bg-pitch-700 hover:bg-pitch-600 border border-pitch-500/40 text-white font-bold text-sm flex items-center justify-center gap-2 transition-all">
+                        <i class="fa-solid fa-forward-step text-amber-accent shrink-0"></i>
+                        <span id="timer-next-label" class="leading-tight">Next: Butt Kicks</span>
+                    </button>
+                </div>
+
+                <!-- Audio Switch -->
+                <div class="pt-4 border-t border-pitch-600/30 flex items-center justify-center space-x-3 text-xs text-gray-400">
+                    <i class="fa-solid fa-volume-high text-amber-accent"></i>
+                    <span>Audio cues enabled (Web Audio Synth)</span>
+                </div>
+            </div>
+
+            <!-- Jump to any exercise -->
+            <div class="max-w-5xl mx-auto space-y-4 pt-4">
+                <div class="text-center space-y-1">
+                    <h2 class="font-display text-2xl font-bold text-white uppercase tracking-wide">All Exercises</h2>
+                    <p class="text-sm text-gray-400">Jump the timer to a drill, or open its details.</p>
+                </div>
+                <div id="timer-exercise-cards-grid" class="auto-grid">
+                    <!-- Injected by renderTimerExerciseGrid() -->
+                </div>
+            </div>
+        </section>
+
+        <!-- ================= PAGE 5: RESOURCES & SPREADSHEET ================= -->
+        <section id="page-resources" class="page-content hidden space-y-8">
+            <div class="border-b border-pitch-600/40 pb-4">
+                <h1 class="font-display text-2xl sm:text-3xl font-bold text-white uppercase tracking-wide">Resources & Core Principles</h1>
+                <p class="text-sm text-gray-400">Access your saved Google Spreadsheet and review key training habits for fastest footwork progression.</p>
+            </div>
+
+            <!-- Google Sheet Embed / Direct Button Header Card -->
+            <div class="bg-pitch-800/90 border border-pitch-600/60 rounded-2xl p-5 sm:p-8 flex flex-col md:flex-row items-stretch md:items-center justify-between gap-6 shadow-xl">
+                <div class="space-y-2 max-w-xl">
+                    <div class="inline-flex items-center space-x-2 text-xs font-bold text-amber-accent uppercase tracking-wider bg-amber-accent/10 px-3 py-1 rounded-full border border-amber-accent/30">
+                        <i class="fa-solid fa-file-excel"></i>
+                        <span>Google Workspace Sync</span>
+                    </div>
+                    <h2 class="font-display text-2xl font-bold text-white uppercase">Beginner At-Home Soccer Training Routine Spreadsheet</h2>
+                    <p class="text-sm text-gray-300">Your cloud-saved Google Sheet containing drill durations, work/rest splits, YouTube links, and notes.</p>
+                </div>
+                <a href="https://docs.google.com/spreadsheets/d/1fDBf_H8URjLRQbyln03dE7vzcUn7vQDSQK8_6yQRZsg/edit" target="_blank" rel="noopener noreferrer" class="w-full md:w-auto justify-center px-6 py-3.5 rounded-xl bg-amber-accent hover:bg-amber-hover text-pitch-800 font-extrabold text-sm flex items-center space-x-3 shrink-0 shadow-lg transition-all">
+                    <i class="fa-solid fa-arrow-up-right-from-square"></i>
+                    <span>Open Live Google Sheet</span>
+                </a>
+            </div>
+
+            <!-- Principles Grid -->
+            <div class="auto-grid">
+                
+                <div class="bg-pitch-800/60 p-6 rounded-xl border border-pitch-600/40 space-y-3">
+                    <div class="w-10 h-10 rounded-lg bg-amber-accent/20 border border-amber-accent/40 flex items-center justify-center text-amber-accent text-lg">
+                        <i class="fa-solid fa-bullseye"></i>
+                    </div>
+                    <h3 class="font-display text-xl font-bold text-white">1. Quality Over Speed</h3>
+                    <p class="text-sm text-gray-300 leading-relaxed">
+                        In the beginning, precision and clean touch matter far more than fast feet. Speed will naturally emerge as muscle memory takes over. Do not rush if the ball is bouncing away.
+                    </p>
+                </div>
+
+                <div class="bg-pitch-800/60 p-6 rounded-xl border border-pitch-600/40 space-y-3">
+                    <div class="w-10 h-10 rounded-lg bg-amber-accent/20 border border-amber-accent/40 flex items-center justify-center text-amber-accent text-lg">
+                        <i class="fa-solid fa-eye"></i>
+                    </div>
+                    <h3 class="font-display text-xl font-bold text-white">2. Keep Eyes & Head Up</h3>
+                    <p class="text-sm text-gray-300 leading-relaxed">
+                        Challenge yourself to glance up at a focal point on your wall for 1–2 seconds during toe taps and bell touches, rather than staring straight down at your feet.
+                    </p>
+                </div>
+
+                <div class="bg-pitch-800/60 p-6 rounded-xl border border-pitch-600/40 space-y-3">
+                    <div class="w-10 h-10 rounded-lg bg-amber-accent/20 border border-amber-accent/40 flex items-center justify-center text-amber-accent text-lg">
+                        <i class="fa-solid fa-arrows-left-right"></i>
+                    </div>
+                    <h3 class="font-display text-xl font-bold text-white">3. Train Both Feet Equally</h3>
+                    <p class="text-sm text-gray-300 leading-relaxed">
+                        Soccer requires two-footed confidence. Give your weaker foot extra patience during sole rolls and V-cuts to build balanced neural pathways.
+                    </p>
+                </div>
+
+                <div class="bg-pitch-800/60 p-6 rounded-xl border border-pitch-600/40 space-y-3">
+                    <div class="w-10 h-10 rounded-lg bg-amber-accent/20 border border-amber-accent/40 flex items-center justify-center text-amber-accent text-lg">
+                        <i class="fa-solid fa-calendar-check"></i>
+                    </div>
+                    <h3 class="font-display text-xl font-bold text-white">4. Daily 20-Minute Consistency</h3>
+                    <p class="text-sm text-gray-300 leading-relaxed">
+                        20 focused minutes every single day produces far superior footwork development than a 2-hour workout done once a week. Make it part of your daily routine!
+                    </p>
+                </div>
+
+            </div>
+        </section>
+
+    </main>
+
+    <!-- FOOTER -->
+    <footer class="bg-pitch-800/90 border-t border-pitch-600/30 py-6 mt-12 mb-20 md:mb-0">
+        <div class="max-w-7xl mx-auto px-4 text-center text-xs text-gray-400 space-y-2">
+            <p class="font-medium text-gray-300">Pitch & Performance • At-Home Beginner Soccer Training Module</p>
+            <p>Designed for daily footwork mastery in living rooms, basements, and small flat spaces.</p>
+        </div>
+    </footer>
+
+    <!-- Mobile bottom navigation -->
+    <nav id="bottom-nav" class="md:hidden fixed bottom-0 inset-x-0 z-50 glass-panel border-t border-pitch-600/50">
+        <div class="grid grid-cols-4">
+            <button id="bnav-home" onclick="navigateTo('home')" class="bnav-btn flex flex-col items-center justify-center gap-1 py-2.5 min-h-14 text-amber-accent text-[11px] font-semibold">
+                <i class="fa-solid fa-house text-base"></i>
+                <span>Overview</span>
+            </button>
+            <button id="bnav-exercises" onclick="navigateTo('exercises')" class="bnav-btn flex flex-col items-center justify-center gap-1 py-2.5 min-h-14 text-gray-400 text-[11px] font-semibold">
+                <i class="fa-solid fa-list-check text-base"></i>
+                <span>Exercises</span>
+            </button>
+            <button id="bnav-timer" onclick="navigateTo('timer')" class="bnav-btn flex flex-col items-center justify-center gap-1 py-2.5 min-h-14 text-gray-400 text-[11px] font-semibold">
+                <i class="fa-solid fa-stopwatch text-base"></i>
+                <span>Timer</span>
+            </button>
+            <button id="bnav-resources" onclick="navigateTo('resources')" class="bnav-btn flex flex-col items-center justify-center gap-1 py-2.5 min-h-14 text-gray-400 text-[11px] font-semibold">
+                <i class="fa-solid fa-book-open text-base"></i>
+                <span>Resources</span>
+            </button>
+        </div>
+    </nav>
+
+    <!-- JAVASCRIPT LOGIC -->
+    <script>
+        /* ================= EXERCISE DATA STORE ================= */
+        const exercisesData = {
+            'high-knees': {
+                id: 'high-knees',
+                title: 'High Knees',
+                category: 'Phase 1: Dynamic Warm-Up',
+                subtitle: 'Light jogging in place, driving the knees up to raise heart rate.',
+                youtubeEmbed: '',
+                workRest: '30s',
+                sets: '1 Round',
+                surface: 'Bodyweight',
+                difficulty: 'Beginner',
+                cues: [
+                    'Stand tall and jog in place.',
+                    'Drive each knee up to about hip height.',
+                    'Land softly on the ball of the foot.',
+                    'Keep the chest up and arms pumping lightly.'
+                ],
+                mistakes: [
+                    'Leaning back and kicking the feet out in front.',
+                    'Stomping the heels into the floor.',
+                    'Holding the breath.'
+                ]
+            },
+            'butt-kicks': {
+                id: 'butt-kicks',
+                title: 'Butt Kicks',
+                category: 'Phase 1: Dynamic Warm-Up',
+                subtitle: 'Jog in place and flick the heels up toward the glutes.',
+                youtubeEmbed: '',
+                workRest: '30s',
+                sets: '1 Round',
+                surface: 'Bodyweight',
+                difficulty: 'Beginner',
+                cues: [
+                    'Stay tall and jog in place.',
+                    'Flick each heel up toward the glute.',
+                    'Keep the knees pointing down, not driving forward.',
+                    'Stay light on the balls of the feet.'
+                ],
+                mistakes: [
+                    'Kicking so hard the lower back arches.',
+                    'Letting the knees travel forward like high knees.',
+                    'Landing flat on the heels.'
+                ]
+            },
+            'ankle-rolls': {
+                id: 'ankle-rolls',
+                title: 'Ankle Rolls & Leg Swings',
+                category: 'Phase 1: Dynamic Warm-Up',
+                subtitle: 'Open the hips and loosen the calves, 30 seconds per leg.',
+                youtubeEmbed: '',
+                workRest: '30s per leg',
+                sets: '1 Round',
+                surface: 'Bodyweight',
+                difficulty: 'Beginner',
+                cues: [
+                    'Hold a wall lightly for balance.',
+                    'Circle each ankle slowly, then reverse the circle.',
+                    'Swing the leg forward and back, then side to side, under control.',
+                    'Switch legs after 30 seconds.'
+                ],
+                mistakes: [
+                    'Swinging so hard the standing hip twists.',
+                    'Locking the standing knee.',
+                    'Rushing the ankle circles.'
+                ]
+            },
+            'calf-raises': {
+                id: 'calf-raises',
+                title: 'Dynamic Calf Raises',
+                category: 'Phase 1: Dynamic Warm-Up',
+                subtitle: 'Rise onto the toes quickly to prepare the lower leg.',
+                youtubeEmbed: '',
+                workRest: '30s',
+                sets: '1 Round',
+                surface: 'Bodyweight',
+                difficulty: 'Beginner',
+                cues: [
+                    'Stand with feet hip-width and a soft knee.',
+                    'Rise quickly onto the balls of the feet.',
+                    'Lower with control and repeat.',
+                    'Stay balanced; use a wall only if you need it.'
+                ],
+                mistakes: [
+                    'Rolling onto the outside of the foot.',
+                    'Bouncing so hard the heels slam down.',
+                    'Leaning forward from the waist.'
+                ]
+            },
+            'toe-taps': {
+                id: 'toe-taps',
+                title: 'Stationary Toe Taps',
+                category: 'Phase 2: Technical Footwork',
+                subtitle: 'Lightly tap the top of a stationary ball with the soles of your feet.',
+                youtubeEmbed: 'https://www.youtube.com/embed/KaktBhbJUyg',
+                workRest: '30s Work / 15s Rest',
+                sets: '3 Rounds',
+                surface: 'Sole (Bottom)',
+                difficulty: 'Beginner',
+                cues: [
+                    'Place ball stationary directly in front of your feet.',
+                    'Lightly hop and alternate tapping the sole of your right and left foot onto the top of the ball.',
+                    'Keep knees slightly bent and stay light on the balls of your feet.',
+                    'Maintain an upright posture and gradually lift your gaze off the ball.'
+                ],
+                mistakes: [
+                    'Stomping down hard on top of the ball causing it to roll away.',
+                    'Hunching upper back too low over the floor.',
+                    'Heavy heel landing instead of bouncing on toes.'
+                ]
+            },
+            'bell-touches': {
+                id: 'bell-touches',
+                title: 'Bell Touches (Tick-Tocks)',
+                category: 'Phase 2: Technical Footwork',
+                subtitle: 'Pass the ball back and forth quickly between the inside of your feet.',
+                youtubeEmbed: 'https://www.youtube.com/embed/_VZFP8jpVYo',
+                workRest: '30s Work / 15s Rest',
+                sets: '3 Rounds',
+                surface: 'Inside of Feet',
+                difficulty: 'Beginner',
+                cues: [
+                    'Stand with feet slightly wider than shoulder-width and knees softly bent.',
+                    'Pass the ball side-to-side in a controlled pendulum motion using inside insteps.',
+                    'Keep your weight balanced centrally so you can adjust quickly.',
+                    'Aim for a rhythmic count: left, right, left, right.'
+                ],
+                mistakes: [
+                    'Kicking the ball too far out to the side out of reach.',
+                    'Standing with stiff, straight knees.',
+                    'Looking exclusively at the ground without raising head.'
+                ]
+            },
+            'sole-rolls': {
+                id: 'sole-rolls',
+                title: 'Sole Rolls (Push-Pulls)',
+                category: 'Phase 2: Technical Footwork',
+                subtitle: 'Roll the ball laterally across your body using the bottom of your foot.',
+                youtubeEmbed: 'https://www.youtube.com/embed/J6U-YClb6AM',
+                workRest: '30s Work / 15s Rest',
+                sets: '3 Rounds',
+                surface: 'Sole to Inside',
+                difficulty: 'Beginner-Intermediate',
+                cues: [
+                    'Place sole of right foot on top of ball.',
+                    'Drag/roll the ball smoothly across your body toward your left side.',
+                    'Receive and trap the ball with the sole or inside of your left foot.',
+                    'Reverse direction and roll back across toward the right side.'
+                ],
+                mistakes: [
+                    'Rolling too fast before establishing control over the receiving foot.',
+                    'Failing to open hips laterally.'
+                ]
+            },
+            'v-cuts': {
+                id: 'v-cuts',
+                title: 'Foundation V-Cuts (Pull-Backs)',
+                category: 'Phase 2: Technical Footwork',
+                subtitle: 'Pull ball backward with sole, then push out diagonally with inside of foot.',
+                youtubeEmbed: 'https://www.youtube.com/embed/OOzeBSvDhGs',
+                workRest: '30s Work / 15s Rest',
+                sets: '3 Rounds',
+                surface: 'Sole & Inside',
+                difficulty: 'Intermediate',
+                cues: [
+                    'Reach forward slightly and drag ball back with sole of right foot.',
+                    'As ball reaches standing leg, turn ankle out and push diagonally forward with inside of right foot.',
+                    'Repeat sequence on left leg to create a continuous sharp "V" shape pattern.'
+                ],
+                mistakes: [
+                    'Pulling ball straight into back heel instead of clearing body angle.',
+                    'Lack of weight shift between working and plant leg.'
+                ]
+            },
+            'juggling': {
+                id: 'juggling',
+                title: 'Kick-Ups (Juggling Progressions)',
+                category: 'Phase 3: Aerial Touch',
+                subtitle: 'Master soft laces touch, locked ankle, and ball control.',
+                youtubeEmbed: 'https://www.youtube.com/embed/5PQgz2SUPdk',
+                workRest: '45s Work / 15s Rest',
+                sets: '3 Sets',
+                surface: 'Laces (Instep)',
+                difficulty: 'Beginner Focus',
+                cues: [
+                    'Hold ball in hands. Drop it, let it bounce ONCE on floor.',
+                    'Kick ball back into hands using shoelaces with ankle locked and toe pointed slightly up.',
+                    'Catch ball, reset posture, repeat on opposite foot.',
+                    'Progression: Try 2 consecutive touches before catching.'
+                ],
+                mistakes: [
+                    'Curling toes up too high causing ball to spin back into chest/face.',
+                    'Kicking with loose, floppy ankle.'
+                ]
+            },
+            'wall-calf': {
+                id: 'wall-calf',
+                title: 'Wall Calf Stretch',
+                category: 'Phase 4: Cool-Down',
+                subtitle: 'Hold a calf stretch against the wall, 30 seconds per leg.',
+                youtubeEmbed: '',
+                workRest: '30s per leg',
+                sets: '1 Round',
+                surface: 'Stretch',
+                difficulty: 'Beginner',
+                cues: [
+                    'Place both hands on a wall.',
+                    'Step one foot back and press that heel into the floor.',
+                    'Keep the back knee straight and the front knee soft.',
+                    'Hold 30 seconds, then switch legs.'
+                ],
+                mistakes: [
+                    'Letting the back heel lift off the floor.',
+                    'Turning the back foot outward.',
+                    'Bouncing in the stretch.'
+                ]
+            },
+            'hamstring-quads': {
+                id: 'hamstring-quads',
+                title: 'Hamstrings & Quads Stretch',
+                category: 'Phase 4: Cool-Down',
+                subtitle: 'Slow the heart rate and stretch the lower limbs.',
+                youtubeEmbed: '',
+                workRest: '30s',
+                sets: '1 Round',
+                surface: 'Stretch',
+                difficulty: 'Beginner',
+                cues: [
+                    'Hinge at the hips and reach toward the toes for the hamstrings.',
+                    'Keep a soft knee if the back of the leg is tight.',
+                    'Stand tall, hold one foot behind you, and gently draw the heel toward the glute for the quad.',
+                    'Breathe slowly and ease out of each stretch.'
+                ],
+                mistakes: [
+                    'Rounding hard through the lower back on the hamstring stretch.',
+                    'Pulling the quad foot so hard the knee twists.',
+                    'Holding the breath.'
+                ]
+            }
+        };
+
+        const drillKeys = Object.keys(exercisesData);
+
+        /* ================= ROUTING (hash-based for GitHub Pages) ================= */
+        const VALID_PAGES = new Set(['home', 'exercises', 'timer', 'resources', 'exercise-detail']);
+
+        function normalizeHash(hash) {
+            const cleaned = (hash || '').replace(/^#/, '').replace(/^\/+/, '');
+            return cleaned || 'home';
+        }
+
+        function hashForPage(pageId, drillId) {
+            if (pageId === 'exercise-detail' && drillId) return `#/exercise/${drillId}`;
+            if (pageId === 'home') return '#/home';
+            return `#/${pageId}`;
+        }
+
+        function parseRoute() {
+            const parts = normalizeHash(location.hash).split('/').filter(Boolean);
+            if (parts[0] === 'exercise' && parts[1]) {
+                return { pageId: 'exercise-detail', drillId: parts[1] };
+            }
+            const pageId = parts[0] || 'home';
+            if (VALID_PAGES.has(pageId) && pageId !== 'exercise-detail') {
+                return { pageId };
+            }
+            return { pageId: 'home' };
+        }
+
+        function showPage(pageId) {
+            document.querySelectorAll('.page-content').forEach(el => el.classList.add('hidden'));
+            const targetPage = document.getElementById(`page-${pageId}`);
+            if (targetPage) targetPage.classList.remove('hidden');
+
+            const navPageId = pageId === 'exercise-detail' ? 'exercises' : pageId;
+
+            document.querySelectorAll('.nav-btn, .mnav-btn').forEach(btn => {
+                btn.classList.remove('bg-pitch-700', 'text-white');
+                btn.classList.add('text-gray-300');
+            });
+            ['nav', 'mnav'].forEach(prefix => {
+                const activeNav = document.getElementById(`${prefix}-${navPageId}`);
+                if (activeNav) {
+                    activeNav.classList.add('bg-pitch-700', 'text-white');
+                    activeNav.classList.remove('text-gray-300');
+                }
+            });
+
+            document.querySelectorAll('.bnav-btn').forEach(btn => {
+                btn.classList.remove('text-amber-accent');
+                btn.classList.add('text-gray-400');
+            });
+            const activeBottom = document.getElementById(`bnav-${navPageId}`);
+            if (activeBottom) {
+                activeBottom.classList.add('text-amber-accent');
+                activeBottom.classList.remove('text-gray-400');
+            }
+
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        function applyRoute() {
+            const { pageId, drillId } = parseRoute();
+            if (pageId === 'exercise-detail') {
+                if (!exercisesData[drillId]) {
+                    history.replaceState(null, '', '#/exercises');
+                    showPage('exercises');
+                    return;
+                }
+                renderExerciseDetail(drillId);
+            }
+            showPage(pageId);
+        }
+
+        function navigateTo(pageId) {
+            if (!VALID_PAGES.has(pageId) || pageId === 'exercise-detail') {
+                pageId = 'home';
+            }
+            const next = hashForPage(pageId);
+            if (normalizeHash(location.hash) === normalizeHash(next)) {
+                applyRoute();
+                return;
+            }
+            location.hash = next;
+        }
+
+        window.addEventListener('hashchange', applyRoute);
+
+        // Mobile Menu Toggle
+        document.getElementById('mobile-menu-toggle').addEventListener('click', () => {
+            document.getElementById('mobile-menu').classList.toggle('hidden');
+        });
+        function closeMobileMenu() {
+            document.getElementById('mobile-menu').classList.add('hidden');
+        }
+
+        /* ================= RENDER EXERCISES GRID ================= */
+        function buildExerciseCard(ex, { compact = false, onClick, actionLabel = 'View Guide & Video', actionIcon = 'fa-circle-play' } = {}) {
+            const card = document.createElement('div');
+            card.className = compact
+                ? 'custom-card p-5 rounded-xl cursor-pointer group flex flex-col justify-between'
+                : 'custom-card p-6 rounded-2xl cursor-pointer group flex flex-col justify-between';
+            card.onclick = onClick || (() => openExercise(ex.id));
+            card.dataset.exerciseId = ex.id;
+
+            card.innerHTML = `
+                <div class="space-y-3">
+                    <div class="flex justify-between items-start gap-2">
+                        <span class="px-2.5 py-1 rounded bg-amber-accent/10 border border-amber-accent/30 text-amber-accent text-xs font-bold uppercase">${ex.category}</span>
+                        <span class="text-xs bg-pitch-700 text-gray-300 px-2 py-0.5 rounded font-mono shrink-0">${ex.workRest}</span>
+                    </div>
+                    <div>
+                        <h3 class="font-display ${compact ? 'text-lg' : 'text-xl'} font-bold text-white group-hover:text-amber-accent transition-colors">${ex.title}</h3>
+                        <p class="text-xs text-gray-400 mt-1 line-clamp-2">${ex.subtitle}</p>
+                    </div>
+                </div>
+                <div class="card-actions mt-5 pt-3 border-t border-pitch-600/30 flex items-center justify-between gap-2 text-xs text-amber-accent font-semibold">
+                    <span class="inline-flex items-center gap-2">
+                        <span>${actionLabel}</span>
+                        <i class="fa-solid ${actionIcon} text-lg transform group-hover:scale-110 transition-transform"></i>
+                    </span>
+                </div>
+            `;
+            return card;
+        }
+
+        function renderExercisesGrid() {
+            const grid = document.getElementById('exercise-cards-grid');
+            grid.innerHTML = '';
+            Object.values(exercisesData).forEach(ex => {
+                grid.appendChild(buildExerciseCard(ex));
+            });
+        }
+
+        function renderTimerExerciseGrid() {
+            const grid = document.getElementById('timer-exercise-cards-grid');
+            if (!grid) return;
+            grid.innerHTML = '';
+            Object.values(exercisesData).forEach(ex => {
+                const card = buildExerciseCard(ex, {
+                    compact: true,
+                    onClick: () => jumpToExerciseInTimer(ex.id),
+                    actionLabel: 'Jump to This Drill',
+                    actionIcon: 'fa-forward'
+                });
+                const details = document.createElement('button');
+                details.type = 'button';
+                details.className = 'shrink-0 px-2.5 py-1.5 rounded-lg bg-pitch-700 hover:bg-pitch-600 text-white text-xs font-semibold';
+                details.textContent = 'Details';
+                details.onclick = (event) => {
+                    event.stopPropagation();
+                    openExercise(ex.id);
+                };
+                card.querySelector('.card-actions').appendChild(details);
+                grid.appendChild(card);
+            });
+        }
+
+        function openCurrentTimerExercise() {
+            const currentItem = timerSchedule[currentIntervalIndex];
+            if (!currentItem || !currentItem.exerciseId) return;
+            openExercise(currentItem.exerciseId);
+        }
+
+        function setTimerDetailsVisible(visible) {
+            const link = document.getElementById('timer-details-link');
+            if (link) link.classList.toggle('hidden', !visible);
+        }
+
+        /* ================= EXERCISE DETAIL VIEW ================= */
+        let currentDrillId = 'toe-taps';
+
+        function renderExerciseDetail(drillId) {
+            const ex = exercisesData[drillId];
+            if (!ex) return;
+            currentDrillId = drillId;
+
+            document.getElementById('detail-title').innerText = ex.title;
+            document.getElementById('detail-subtitle').innerText = ex.subtitle;
+            document.getElementById('detail-drill-category').innerText = ex.category;
+            const videoWrap = document.getElementById('detail-video-wrap');
+            if (ex.youtubeEmbed) {
+                videoWrap.classList.remove('hidden');
+                document.getElementById('detail-iframe').src = ex.youtubeEmbed;
+            } else {
+                videoWrap.classList.add('hidden');
+                document.getElementById('detail-iframe').src = '';
+            }
+            document.getElementById('detail-stat-workrest').innerText = ex.workRest;
+            document.getElementById('detail-stat-sets').innerText = ex.sets;
+            document.getElementById('detail-stat-surface').innerText = ex.surface;
+            document.getElementById('detail-stat-diff').innerText = ex.difficulty;
+
+            const cuesList = document.getElementById('detail-cues-list');
+            cuesList.innerHTML = ex.cues.map(cue => `<li>${cue}</li>`).join('');
+
+            const mistakesList = document.getElementById('detail-mistakes-list');
+            mistakesList.innerHTML = ex.mistakes.map(m => `
+                <li class="flex items-start space-x-2">
+                    <i class="fa-solid fa-xmark text-red-400 mt-0.5 shrink-0"></i>
+                    <span>${m}</span>
+                </li>
+            `).join('');
+
+            const currentIndex = drillKeys.indexOf(drillId);
+            const prevIndex = (currentIndex - 1 + drillKeys.length) % drillKeys.length;
+            const nextIndex = (currentIndex + 1) % drillKeys.length;
+
+            document.getElementById('btn-prev-drill').onclick = () => openExercise(drillKeys[prevIndex]);
+            const nextBtn = document.getElementById('btn-next-drill');
+            nextBtn.onclick = () => openExercise(drillKeys[nextIndex]);
+            nextBtn.querySelector('span').innerText = `Next: ${exercisesData[drillKeys[nextIndex]].title}`;
+        }
+
+        function openExercise(drillId) {
+            if (!exercisesData[drillId]) return;
+            const next = hashForPage('exercise-detail', drillId);
+            if (normalizeHash(location.hash) === normalizeHash(next)) {
+                applyRoute();
+                return;
+            }
+            location.hash = next;
+        }
+
+        /* ================= WORKOUT TIMER LOGIC ================= */
+        const timerSchedule = [
+            // Phase 1: Dynamic Warm-Up (2.5 min, no rest)
+            { exerciseId: 'high-knees', drill: 'High Knees', desc: 'Warm-up • Drive knees up, light and quick', phase: 'Phase 1: Dynamic Warm-Up', work: 30, rest: 0, status: 'WARM-UP' },
+            { exerciseId: 'butt-kicks', drill: 'Butt Kicks', desc: 'Warm-up • Heels toward the glutes, stay tall', phase: 'Phase 1: Dynamic Warm-Up', work: 30, rest: 0, status: 'WARM-UP' },
+            { exerciseId: 'ankle-rolls', drill: 'Ankle Rolls & Leg Swings', desc: 'Right side • 30 seconds', phase: 'Phase 1: Dynamic Warm-Up', work: 30, rest: 0, status: 'WARM-UP' },
+            { exerciseId: 'ankle-rolls', drill: 'Ankle Rolls & Leg Swings', desc: 'Left side • 30 seconds', phase: 'Phase 1: Dynamic Warm-Up', work: 30, rest: 0, status: 'WARM-UP' },
+            { exerciseId: 'calf-raises', drill: 'Dynamic Calf Raises', desc: 'Rise onto the toes quickly • 30 seconds', phase: 'Phase 1: Dynamic Warm-Up', work: 30, rest: 0, status: 'WARM-UP' },
+
+            // Round 1 Circuit
+            { exerciseId: 'toe-taps', drill: 'Stationary Toe Taps', desc: 'Circuit Round 1 of 3 • High rhythm touch', phase: 'Phase 2: Footwork', work: 30, rest: 15 },
+            { exerciseId: 'bell-touches', drill: 'Bell Touches (Tick-Tocks)', desc: 'Circuit Round 1 of 3 • Side to side passes', phase: 'Phase 2: Footwork', work: 30, rest: 15 },
+            { exerciseId: 'sole-rolls', drill: 'Sole Rolls (Push-Pulls)', desc: 'Circuit Round 1 of 3 • Lateral drag across body', phase: 'Phase 2: Footwork', work: 30, rest: 15 },
+            { exerciseId: 'v-cuts', drill: 'Foundation V-Cuts', desc: 'Circuit Round 1 of 3 • Pullback escape angle', phase: 'Phase 2: Footwork', work: 30, rest: 15 },
+
+            // Round 2 Circuit
+            { exerciseId: 'toe-taps', drill: 'Stationary Toe Taps', desc: 'Circuit Round 2 of 3 • Eyes up challenge', phase: 'Phase 2: Footwork', work: 30, rest: 15 },
+            { exerciseId: 'bell-touches', drill: 'Bell Touches (Tick-Tocks)', desc: 'Circuit Round 2 of 3 • Soft insoles touch', phase: 'Phase 2: Footwork', work: 30, rest: 15 },
+            { exerciseId: 'sole-rolls', drill: 'Sole Rolls (Push-Pulls)', desc: 'Circuit Round 2 of 3 • Continuous lateral roll', phase: 'Phase 2: Footwork', work: 30, rest: 15 },
+            { exerciseId: 'v-cuts', drill: 'Foundation V-Cuts', desc: 'Circuit Round 2 of 3 • Sharp V direction change', phase: 'Phase 2: Footwork', work: 30, rest: 15 },
+
+            // Round 3 Circuit
+            { exerciseId: 'toe-taps', drill: 'Stationary Toe Taps', desc: 'Circuit Round 3 of 3 • Final footwork push!', phase: 'Phase 2: Footwork', work: 30, rest: 15 },
+            { exerciseId: 'bell-touches', drill: 'Bell Touches (Tick-Tocks)', desc: 'Circuit Round 3 of 3 • Maximum control', phase: 'Phase 2: Footwork', work: 30, rest: 15 },
+            { exerciseId: 'sole-rolls', drill: 'Sole Rolls (Push-Pulls)', desc: 'Circuit Round 3 of 3 • Both feet balanced', phase: 'Phase 2: Footwork', work: 30, rest: 15 },
+            { exerciseId: 'v-cuts', drill: 'Foundation V-Cuts', desc: 'Circuit Round 3 of 3 • Shield & escape angle', phase: 'Phase 2: Footwork', work: 30, rest: 15 },
+
+            // Juggling Phase
+            { exerciseId: 'juggling', drill: 'Kick-Ups (Juggling)', desc: 'Set 1 of 3 • Drop, single bounce & catch', phase: 'Phase 3: Aerial Touch', work: 45, rest: 15 },
+            { exerciseId: 'juggling', drill: 'Kick-Ups (Juggling)', desc: 'Set 2 of 3 • Try 2 consecutive touches', phase: 'Phase 3: Aerial Touch', work: 45, rest: 15 },
+            { exerciseId: 'juggling', drill: 'Kick-Ups (Juggling)', desc: 'Set 3 of 3 • Final aerial touch focus', phase: 'Phase 3: Aerial Touch', work: 45, rest: 15 },
+
+            // Phase 4: Cool-Down (90s, no rest)
+            { exerciseId: 'wall-calf', drill: 'Wall Calf Stretch', desc: 'Right leg • Hold 30 seconds', phase: 'Phase 4: Cool-Down', work: 30, rest: 0, status: 'STRETCH' },
+            { exerciseId: 'wall-calf', drill: 'Wall Calf Stretch', desc: 'Left leg • Hold 30 seconds', phase: 'Phase 4: Cool-Down', work: 30, rest: 0, status: 'STRETCH' },
+            { exerciseId: 'hamstring-quads', drill: 'Hamstrings & Quads Stretch', desc: 'Slow down and stretch the lower limbs', phase: 'Phase 4: Cool-Down', work: 30, rest: 0, status: 'STRETCH' }
+        ];
+
+        function jumpToExerciseInTimer(exerciseId) {
+            const index = timerSchedule.findIndex(item => item.exerciseId === exerciseId);
+            if (index < 0) return;
+
+            pauseTimer();
+            currentIntervalIndex = index;
+            isWorkState = true;
+            timeLeft = timerSchedule[index].work;
+            document.getElementById('timer-toggle-text').innerText = 'START WORKOUT';
+            updateTimerUI();
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        let currentIntervalIndex = 0;
+        let isWorkState = true;
+        let timeLeft = timerSchedule[0].work;
+        let timerInterval = null;
+        let isRunning = false;
+
+        // Audio Beep Generator using Web Audio API
+        function playBeep(freq = 600, duration = 0.15) {
+            try {
+                const AudioCtx = window.AudioContext || window.webkitAudioContext;
+                if (!AudioCtx) return;
+                const ctx = new AudioCtx();
+                const osc = ctx.createOscillator();
+                const gain = ctx.createGain();
+                osc.type = 'sine';
+                osc.frequency.setValueAtTime(freq, ctx.currentTime);
+                gain.gain.setValueAtTime(0.3, ctx.currentTime);
+                osc.connect(gain);
+                gain.connect(ctx.destination);
+                osc.start();
+                osc.stop(ctx.currentTime + duration);
+            } catch(e) {
+                // Audio context restriction silently handled
+            }
+        }
+
+        function getNextTimerLabel() {
+            const nextIndex = currentIntervalIndex + 1;
+            if (nextIndex >= timerSchedule.length) {
+                return 'Next: Finish Workout';
+            }
+            return `Next: ${timerSchedule[nextIndex].drill}`;
+        }
+
+        function getPreviousTimerLabel() {
+            if (!isWorkState) {
+                return `Previous: ${timerSchedule[currentIntervalIndex].drill}`;
+            }
+            if (currentIntervalIndex <= 0) {
+                return 'Previous';
+            }
+            return `Previous: ${timerSchedule[currentIntervalIndex - 1].drill}`;
+        }
+
+        function updatePrevNextLabels() {
+            const prevBtn = document.getElementById('btn-timer-prev');
+            const prevLabel = document.getElementById('timer-prev-label');
+            const canGoPrev = !isWorkState || currentIntervalIndex > 0;
+            prevBtn.disabled = !canGoPrev;
+            prevLabel.innerText = getPreviousTimerLabel();
+            document.getElementById('timer-next-label').innerText = getNextTimerLabel();
+        }
+
+        function updateTimerUI() {
+            const currentItem = timerSchedule[currentIntervalIndex];
+            document.getElementById('timer-banner-phase').innerText = currentItem.phase;
+            document.getElementById('timer-drill-title').innerText = currentItem.drill;
+            document.getElementById('timer-drill-desc').innerText = isWorkState ? currentItem.desc : 'REST & RECOVER • Shake out legs & breathe';
+
+            const statusLabel = document.getElementById('timer-status-label');
+            if (!isWorkState) {
+                statusLabel.innerText = 'REST';
+                statusLabel.className = 'text-xs uppercase font-extrabold tracking-widest text-amber-accent';
+            } else if (currentItem.status === 'STRETCH') {
+                statusLabel.innerText = 'STRETCH';
+                statusLabel.className = 'text-xs uppercase font-extrabold tracking-widest text-amber-accent';
+            } else if (currentItem.status === 'WARM-UP') {
+                statusLabel.innerText = 'WARM-UP';
+                statusLabel.className = 'text-xs uppercase font-extrabold tracking-widest text-emerald-400';
+            } else {
+                statusLabel.innerText = 'WORK';
+                statusLabel.className = 'text-xs uppercase font-extrabold tracking-widest text-emerald-400';
+            }
+
+            document.getElementById('timer-countdown').innerText = timeLeft;
+            document.getElementById('timer-round-info').innerText = `Interval ${currentIntervalIndex + 1} / ${timerSchedule.length}`;
+            updatePrevNextLabels();
+            setTimerDetailsVisible(true);
+
+            // Update Progress Ring
+            const totalDuration = Math.max(1, isWorkState ? currentItem.work : currentItem.rest);
+            const strokeDashoffset = 691 - (timeLeft / totalDuration) * 691;
+            document.getElementById('timer-progress-ring').style.strokeDashoffset = strokeDashoffset;
+        }
+
+        function toggleTimer() {
+            if (isRunning) {
+                pauseTimer();
+            } else {
+                startTimer();
+            }
+        }
+
+        function startTimer() {
+            isRunning = true;
+            document.getElementById('timer-toggle-icon').className = 'fa-solid fa-pause';
+            document.getElementById('timer-toggle-text').innerText = 'PAUSE';
+
+            timerInterval = setInterval(() => {
+                timeLeft--;
+                if (timeLeft <= 3 && timeLeft > 0) {
+                    playBeep(440, 0.1);
+                }
+                if (timeLeft <= 0) {
+                    playBeep(880, 0.4);
+                    nextInterval();
+                } else {
+                    updateTimerUI();
+                }
+            }, 1000);
+        }
+
+        function pauseTimer() {
+            isRunning = false;
+            clearInterval(timerInterval);
+            document.getElementById('timer-toggle-icon').className = 'fa-solid fa-play';
+            document.getElementById('timer-toggle-text').innerText = 'RESUME';
+        }
+
+        function finishWorkout() {
+            pauseTimer();
+            currentIntervalIndex = timerSchedule.length;
+            isWorkState = true;
+            timeLeft = 0;
+            document.getElementById('timer-drill-title').innerText = 'WORKOUT COMPLETE!';
+            document.getElementById('timer-drill-desc').innerText = 'Great job. Warm-up through cool-down is done.';
+            document.getElementById('timer-countdown').innerText = '0';
+            document.getElementById('timer-round-info').innerText = `Interval ${timerSchedule.length} / ${timerSchedule.length}`;
+            document.getElementById('timer-status-label').innerText = 'DONE';
+            document.getElementById('timer-status-label').className = 'text-xs uppercase font-extrabold tracking-widest text-amber-accent';
+            document.getElementById('timer-progress-ring').style.strokeDashoffset = 691;
+            document.getElementById('timer-next-label').innerText = 'Next: Restart Workout';
+            document.getElementById('timer-prev-label').innerText = `Previous: ${timerSchedule[timerSchedule.length - 1].drill}`;
+            document.getElementById('btn-timer-prev').disabled = false;
+            setTimerDetailsVisible(false);
+        }
+
+        function nextInterval() {
+            const currentItem = timerSchedule[currentIntervalIndex];
+            if (isWorkState && currentItem.rest > 0) {
+                isWorkState = false;
+                timeLeft = currentItem.rest;
+                updateTimerUI();
+                return;
+            }
+
+            isWorkState = true;
+            currentIntervalIndex++;
+            if (currentIntervalIndex >= timerSchedule.length) {
+                finishWorkout();
+                return;
+            }
+            timeLeft = timerSchedule[currentIntervalIndex].work;
+            updateTimerUI();
+        }
+
+        function skipInterval() {
+            // Jump to the next drill's work period (skip remaining work/rest of current slot)
+            pauseTimer();
+            if (currentIntervalIndex >= timerSchedule.length) {
+                resetTimer();
+                return;
+            }
+            currentIntervalIndex++;
+            isWorkState = true;
+            if (currentIntervalIndex >= timerSchedule.length) {
+                finishWorkout();
+                return;
+            }
+            timeLeft = timerSchedule[currentIntervalIndex].work;
+            updateTimerUI();
+        }
+
+        function previousInterval() {
+            pauseTimer();
+            if (currentIntervalIndex >= timerSchedule.length) {
+                currentIntervalIndex = timerSchedule.length - 1;
+                isWorkState = true;
+                timeLeft = timerSchedule[currentIntervalIndex].work;
+                updateTimerUI();
+                return;
+            }
+            if (!isWorkState) {
+                // From rest, restart the current drill
+                isWorkState = true;
+                timeLeft = timerSchedule[currentIntervalIndex].work;
+                updateTimerUI();
+                return;
+            }
+            if (currentIntervalIndex <= 0) return;
+            currentIntervalIndex--;
+            isWorkState = true;
+            timeLeft = timerSchedule[currentIntervalIndex].work;
+            updateTimerUI();
+        }
+
+        function resetTimer() {
+            pauseTimer();
+            currentIntervalIndex = 0;
+            isWorkState = true;
+            timeLeft = timerSchedule[0].work;
+            updateTimerUI();
+        }
+
+        // Initialize App on Load
+        window.onload = function() {
+            renderExercisesGrid();
+            renderTimerExerciseGrid();
+            updateTimerUI();
+            if (!location.hash || location.hash === '#') {
+                history.replaceState(null, '', '#/home');
+            }
+            applyRoute();
+        };
+    </script>
+</body>
+</html>
